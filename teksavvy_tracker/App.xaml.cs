@@ -60,7 +60,7 @@ namespace teksavvy_tracker {
             // register the backgroundtask to update the live tile every 6 hours
             registerBackgroundTask("BackgroundTask.UpdateTileBackgroundTask",
                                     "UpdateTileBackgroundTask",
-                                    new MaintenanceTrigger(360, false), null);
+                                    new MaintenanceTrigger(180, false), null);
         }
 
         /// <summary>

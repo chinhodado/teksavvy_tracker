@@ -5,9 +5,18 @@
     xmlns:local="using:teksavvy_tracker"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:metroChart="using:De.TorstenMandelkow.MetroChart"
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBlock HorizontalAlignment="Left" Margin="163,178,0,0" TextWrapping="Wrap" Text="// todo: add something here. Fancy charts?" VerticalAlignment="Top" Height="116" Width="475" FontSize="14"/>
+        <metroChart:ClusteredColumnChart ChartSubTitle="Usage in GB" 
+                ChartTitle="Usage by month" Width="800" Height="400">
+            <metroChart:ClusteredColumnChart.Series>
+                <metroChart:ChartSeries DisplayMember="Name"
+                            ItemsSource="{Binding Path=Usages}"
+                            SeriesTitle="Months"
+                            ValueMember="Amount" />
+            </metroChart:ClusteredColumnChart.Series>
+        </metroChart:ClusteredColumnChart>
     </Grid>
 </Page>

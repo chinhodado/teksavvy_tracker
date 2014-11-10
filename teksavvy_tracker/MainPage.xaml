@@ -5,18 +5,34 @@
     xmlns:local="using:teksavvy_tracker"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:metroChart="using:De.TorstenMandelkow.MetroChart"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <metroChart:ClusteredColumnChart ChartSubTitle="Usage in GB" 
-                ChartTitle="Usage by month" Width="800" Height="400">
-            <metroChart:ClusteredColumnChart.Series>
-                <metroChart:ChartSeries DisplayMember="Name"
-                            ItemsSource="{Binding Path=Usages}"
-                            SeriesTitle="Months"
-                            ValueMember="Amount" />
-            </metroChart:ClusteredColumnChart.Series>
-        </metroChart:ClusteredColumnChart>
+    <Grid Name="MainGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Button x:Name="MonthlyButton" 
+                Content="Monthly" 
+                HorizontalAlignment="Left" 
+                Margin="113,93,0,0" 
+                VerticalAlignment="Top" 
+                Click="MonthlyButton_Click"/>
+        
+        <Button x:Name="DailyButton" 
+                Content="Daily" 
+                HorizontalAlignment="Left" 
+                Margin="223,93,0,0" 
+                VerticalAlignment="Top" 
+                RenderTransformOrigin="0.181,0.259" 
+                Click="DailyButton_Click"/>
+        
+        <ComboBox x:Name="comboBox" 
+                  HorizontalAlignment="Left" 
+                  Margin="336,92,0,0" VerticalAlignment="Top"
+                  SelectedIndex="0" SelectionChanged="comboBox_SelectionChanged">
+            <ComboBoxItem Content="Download onpeak"/>
+            <ComboBoxItem Content="Upload onpeak" />
+            <ComboBoxItem Content="Download offpeak" />
+            <ComboBoxItem Content="Upload offpeak" />
+            <ComboBoxItem Content="Download total" />
+            <ComboBoxItem Content="Upload total" />
+        </ComboBox>
     </Grid>
 </Page>

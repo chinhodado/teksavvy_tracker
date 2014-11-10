@@ -1,0 +1,21 @@
+﻿<Page
+    x:Class="teksavvy_tracker.ColumnChart"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:teksavvy_tracker"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:metroChart="using:De.TorstenMandelkow.MetroChart"
+    mc:Ignorable="d">
+
+    <metroChart:ClusteredColumnChart Name="Chart" ChartSubTitle="Usage in GB" 
+            ChartTitle="Usage by month" Height="400">
+        <metroChart:ClusteredColumnChart.Series>
+            <metroChart:ChartSeries Name="ChartSeries"
+                        DisplayMember="Name"
+                        ItemsSource="{Binding Path=Usages}"
+                        SeriesTitle="Month"
+                        ValueMember="Amount" />
+        </metroChart:ClusteredColumnChart.Series>
+    </metroChart:ClusteredColumnChart>
+</Page>

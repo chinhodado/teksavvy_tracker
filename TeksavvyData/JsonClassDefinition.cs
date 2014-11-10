@@ -2,6 +2,7 @@
 
 namespace TeksavvyData {
     public struct UsageData {
+        public string Date;
         public string StartDate;
         public string EndDate;
         public string OID;

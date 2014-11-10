@@ -1,91 +1,78 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Data;
-using Windows.Web.Http;
-using Newtonsoft.Json;
-using TeksavvyData;
+﻿using Windows.UI.Xaml.Controls;
+using De.TorstenMandelkow.MetroChart;
 
 namespace teksavvy_tracker {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
     public sealed partial class MainPage : Page {
+        /// <summary>
+        /// Our main view model
+        /// </summary>
+        private MainViewModel model;
+
+        /// <summary>
+        /// The last period type chosen. I should have made the buttons radio boxes or something, but wtv
+        /// </summary>
+        private string lastPeriodType;
+
         public MainPage() {
             InitializeComponent();
-            var model = new MainViewModel();
+
+            // create a chart and add it to our main page
+            ColumnChart mc = new ColumnChart {Name = "ColumnChart"};
+            Grid mainGrid = (Grid) FindName("MainGrid");
+            mainGrid.Children.Add(mc);
+
+            // set our data context
+            model = new MainViewModel();
             DataContext = model;
 
-            model.Update();
-        }
-    }
-
-    public class MainViewModel {
-        private ObservableCollection<Usage> _usages = new ObservableCollection<Usage>();
-        public ObservableCollection<Usage> Usages {
-            get {
-                return _usages;
-            }
+            // default chart when starting up is the monthly onpeak download chart
+            UpdateColumnChart("Month", null);
         }
 
-        public async Task Update() {
-            var values = await GetAllMonthlyUsage();
-            foreach (var usageData in values) {
-                _usages.Add(new Usage {
-                    Name = usageData.EndDate.Substring(0, 7), 
-                    Amount = usageData.OnPeakDownload
-                });
-            }
+        private void MonthlyButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) {
+            UpdateColumnChart("Month", null);
         }
 
-        private static async Task<IList<UsageData>> GetAllMonthlyUsage() {
-            // get the data
-            HttpClient httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("TekSavvy-APIKey", "36A99E286BCA90747D4C6E03EA0E3C49"); // <- my API key
-            HttpResponseMessage response = await httpClient.GetAsync(new Uri("https://api.teksavvy.com/web/Usage/UsageSummaryRecords"));
-            response.EnsureSuccessStatusCode();
-            string responseBodyAsText = await response.Content.ReadAsStringAsync();
-
-            // and parse it
-            var result = JsonConvert.DeserializeObject<TeksavvyJson>(responseBodyAsText);
-            return result.Value;
-        }
-    }
-
-    public class Usage : INotifyPropertyChanged {
-        private string _name = string.Empty;
-        private double _amount;
-
-        public string Name {
-            get {
-                return _name;
-            }
-            set {
-                _name = value;
-                NotifyPropertyChanged();
-            }
+        private void DailyButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) {
+            UpdateColumnChart("Day", null);
         }
 
-        public double Amount {
-            get {
-                return _amount;
-            }
-            set {
-                _amount = value;
-                NotifyPropertyChanged();
-            }
+        private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            string selection = (e.AddedItems[0] as ComboBoxItem).Content as string;
+            UpdateColumnChart(null, selection);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        private void UpdateColumnChart(string periodType, string directionPeakType) {
+            Grid mainGrid = (Grid) FindName("MainGrid");
+            if (mainGrid == null) { // just started the app
+                return;
+            }
+            ClusteredColumnChart chart =
+                (ClusteredColumnChart) ((ColumnChart) mainGrid.FindName("ColumnChart")).FindName("Chart");
+            ChartSeries series = chart.Series[0];
 
-        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "") {
-            if (PropertyChanged != null) {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            if (periodType == null) {
+                periodType = lastPeriodType;
+            }
+
+            series.SeriesTitle = periodType;
+            lastPeriodType = periodType;
+
+            if (directionPeakType == null) {
+                directionPeakType =
+                    ((ComboBoxItem) comboBox.SelectedItem).Content.ToString();
+            }
+
+            if (periodType == "Day") {
+                chart.ChartTitle = directionPeakType + " in the last 30 days";
+                model.UpdateDaily(directionPeakType);
+            }
+            else if (periodType == "Month") {
+                chart.ChartTitle = directionPeakType + " by months";
+                model.UpdateMonthly(directionPeakType);
             }
         }
     }

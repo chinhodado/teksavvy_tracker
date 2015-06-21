@@ -1,1 +1,0 @@
-A small Windows 8 app to track Teksavvy internet usage.

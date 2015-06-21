@@ -25,7 +25,7 @@ namespace BackgroundTask {
 
             XmlNodeList tileTextAttributes = tileXml.GetElementsByTagName("text");
             tileTextAttributes[0].InnerText = "Used this month: ";
-            tileTextAttributes[1].InnerText = peakDownloadThisMonth + " / 400 GB";
+            tileTextAttributes[1].InnerText = String.Format("{0} / {1} GB", peakDownloadThisMonth, Settings.DownloadLimit);
 
             TileNotification tileNotification = new TileNotification(tileXml) {
                 ExpirationTime = DateTimeOffset.UtcNow.AddDays(1)
@@ -40,7 +40,7 @@ namespace BackgroundTask {
         private static async Task<string> getCurrentMonthUsage() {
             // get the data
             HttpClient httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("TekSavvy-APIKey", "36A99E286BCA90747D4C6E03EA0E3C49"); // <- my API key
+            httpClient.DefaultRequestHeaders.Add("TekSavvy-APIKey", Settings.ApiKey);
             HttpResponseMessage response = await httpClient.GetAsync(new Uri("https://api.teksavvy.com/web/Usage/UsageSummaryRecords"));
             response.EnsureSuccessStatusCode();
             string responseBodyAsText = await response.Content.ReadAsStringAsync();

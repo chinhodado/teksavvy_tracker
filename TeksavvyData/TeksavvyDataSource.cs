@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Web.Http;
-using Newtonsoft.Json;
 
 namespace TeksavvyData {
     /// <summary>
@@ -40,7 +40,7 @@ namespace TeksavvyData {
 
             if (!requestCache.ContainsKey(requestUrl)) {
                 HttpClient httpClient = new HttpClient();
-                httpClient.DefaultRequestHeaders.Add("TekSavvy-APIKey", "36A99E286BCA90747D4C6E03EA0E3C49"); // <- my API key
+                httpClient.DefaultRequestHeaders.Add("TekSavvy-APIKey", Settings.ApiKey);
                 HttpResponseMessage response = await httpClient.GetAsync(new Uri(requestUrl));
                 response.EnsureSuccessStatusCode();
                 string responseBodyAsText = await response.Content.ReadAsStringAsync();

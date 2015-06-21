@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace TeksavvyData {
     public struct UsageData {
@@ -17,5 +18,8 @@ namespace TeksavvyData {
         // there is also odata.metadata in the original Json, but it's not needed
 
         public IList<UsageData> Value { get; set; }
+
+        [JsonProperty("odata.nextLink")]
+        public string NextLink { get; set; }
     }
 }

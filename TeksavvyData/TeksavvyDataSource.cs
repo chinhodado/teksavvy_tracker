@@ -38,6 +38,15 @@ namespace TeksavvyData {
                     throw new Exception("Invalid type of request!");
             }
 
+            return await GetRequestResponse(requestUrl);
+        }
+
+        /// <summary>
+        /// Get a response for the request URL
+        /// </summary>
+        /// <param name="requestUrl">The request URL</param>
+        /// <returns>The response from Teksavvy's server</returns>
+        private static async Task<string> GetRequestResponse(String requestUrl) {
             if (!requestCache.ContainsKey(requestUrl)) {
                 HttpClient httpClient = new HttpClient();
                 httpClient.DefaultRequestHeaders.Add("TekSavvy-APIKey", Settings.ApiKey);
@@ -76,12 +85,22 @@ namespace TeksavvyData {
         }
 
         private static async Task<IList<UsageData>> GetAllDailyUsage() {
+            List<UsageData> list = new List<UsageData>();
             // get the data
             string response = await GetRequestResponse(RequestType.UsageRecords);
 
             // and parse it
             var result = JsonConvert.DeserializeObject<TeksavvyJson>(response);
-            return result.Value;
+            list.AddRange(result.Value);
+
+            // handle link pagination if necessary
+            while (!String.IsNullOrEmpty(result.NextLink)) {
+                response = await GetRequestResponse(result.NextLink);
+                result = JsonConvert.DeserializeObject<TeksavvyJson>(response);
+                list.AddRange(result.Value);
+            }
+
+            return list;
         }
     }
 }

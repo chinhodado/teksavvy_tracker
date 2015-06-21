@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
+using TeksavvyData;
 using Windows.ApplicationModel.Background;
 using Windows.Data.Xml.Dom;
 using Windows.Foundation;
 using Windows.UI.Notifications;
 using Windows.Web.Http;
-using TeksavvyData;
-using Newtonsoft.Json;
 
 namespace BackgroundTask {
     public sealed class UpdateTileBackgroundTask : IBackgroundTask {
@@ -25,7 +25,7 @@ namespace BackgroundTask {
 
             XmlNodeList tileTextAttributes = tileXml.GetElementsByTagName("text");
             tileTextAttributes[0].InnerText = "Used this month: ";
-            tileTextAttributes[1].InnerText = peakDownloadThisMonth + " / 300 GB";
+            tileTextAttributes[1].InnerText = peakDownloadThisMonth + " / 400 GB";
 
             TileNotification tileNotification = new TileNotification(tileXml) {
                 ExpirationTime = DateTimeOffset.UtcNow.AddDays(1)

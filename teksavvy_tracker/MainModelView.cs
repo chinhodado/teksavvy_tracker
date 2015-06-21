@@ -2,13 +2,13 @@
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using TeksavvyData;
+using Windows.ApplicationModel.Core;
 
 namespace teksavvy_tracker {
     /// <summary>
     /// The view model for our main page
     /// </summary>
     public class MainViewModel {
-        
         private ObservableCollection<Usage> _usages = new ObservableCollection<Usage>();
         public ObservableCollection<Usage> Usages {
             get {
@@ -40,13 +40,17 @@ namespace teksavvy_tracker {
         public async Task UpdateDaily(string directionPeakType) {
             _usages.Clear();
             var values = await TeksavvyDataSource.GetAllDailyUsageOperation();
-            for (int i = values.Count - 30; i < values.Count; i++) {
-                var usageData = values[i];
-                _usages.Add(new Usage {
-                    Name = usageData.Date.Substring(0, 10),
-                    Amount = getUsageData(usageData, directionPeakType)
-                });
-            }
+            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+
+            await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => {
+                for (int i = values.Count - 30; i < values.Count; i++) {
+                    var usageData = values[i];
+                    _usages.Add(new Usage {
+                        Name = usageData.Date.Substring(0, 10),
+                        Amount = getUsageData(usageData, directionPeakType)
+                    });
+                }
+            });
         }
 
         /// <summary>

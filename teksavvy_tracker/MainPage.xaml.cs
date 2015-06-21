@@ -1,5 +1,6 @@
-﻿using Windows.UI.Xaml.Controls;
-using De.TorstenMandelkow.MetroChart;
+﻿using De.TorstenMandelkow.MetroChart;
+using System.Threading.Tasks;
+using Windows.UI.Xaml.Controls;
 
 namespace teksavvy_tracker {
     /// <summary>
@@ -32,20 +33,20 @@ namespace teksavvy_tracker {
             UpdateColumnChart("Month", null);
         }
 
-        private void MonthlyButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) {
-            UpdateColumnChart("Month", null);
+        private async void MonthlyButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) {
+            await UpdateColumnChart("Month", null);
         }
 
-        private void DailyButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) {
-            UpdateColumnChart("Day", null);
+        private async void DailyButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e) {
+            await UpdateColumnChart("Day", null);
         }
 
-        private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+        private async void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             string selection = (e.AddedItems[0] as ComboBoxItem).Content as string;
-            UpdateColumnChart(null, selection);
+            await UpdateColumnChart(null, selection);
         }
 
-        private void UpdateColumnChart(string periodType, string directionPeakType) {
+        private async Task UpdateColumnChart(string periodType, string directionPeakType) {
             Grid mainGrid = (Grid) FindName("MainGrid");
             if (mainGrid == null) { // just started the app
                 return;
@@ -68,11 +69,11 @@ namespace teksavvy_tracker {
 
             if (periodType == "Day") {
                 chart.ChartTitle = directionPeakType + " in the last 30 days";
-                model.UpdateDaily(directionPeakType);
+                await model.UpdateDaily(directionPeakType);
             }
             else if (periodType == "Month") {
                 chart.ChartTitle = directionPeakType + " by months";
-                model.UpdateMonthly(directionPeakType);
+                await model.UpdateMonthly(directionPeakType);
             }
         }
     }

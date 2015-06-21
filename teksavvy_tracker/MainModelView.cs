@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TeksavvyData;
 using Windows.ApplicationModel.Core;
@@ -9,8 +10,8 @@ namespace teksavvy_tracker {
     /// The view model for our main page
     /// </summary>
     public class MainViewModel {
-        private ObservableCollection<Usage> _usages = new ObservableCollection<Usage>();
-        public ObservableCollection<Usage> Usages {
+        private RangeEnabledObservableCollection<Usage> _usages = new RangeEnabledObservableCollection<Usage>();
+        public RangeEnabledObservableCollection<Usage> Usages {
             get {
                 return _usages;
             }
@@ -24,12 +25,15 @@ namespace teksavvy_tracker {
         public async Task UpdateMonthly(string directionPeakType) {
             _usages.Clear();
             var values = await TeksavvyDataSource.GetAllMonthlyUsageOperation();
-            foreach (var usageData in values) {
-                _usages.Add(new Usage {
+            var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
+
+            await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => {
+                List<Usage> tmpList = values.Select(usageData => new Usage {
                     Name = usageData.EndDate.Substring(0, 7),
                     Amount = getUsageData(usageData, directionPeakType)
-                });
-            }
+                }).ToList();
+                _usages.AddRange(tmpList);
+            });
         }
 
         /// <summary>
@@ -43,13 +47,15 @@ namespace teksavvy_tracker {
             var dispatcher = CoreApplication.MainView.CoreWindow.Dispatcher;
 
             await dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => {
+                List<Usage> tmpList = new List<Usage>();
                 for (int i = values.Count - 30; i < values.Count; i++) {
                     var usageData = values[i];
-                    _usages.Add(new Usage {
+                    tmpList.Add(new Usage {
                         Name = usageData.Date.Substring(0, 10),
                         Amount = getUsageData(usageData, directionPeakType)
                     });
                 }
+                _usages.AddRange(tmpList);
             });
         }
 

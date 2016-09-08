@@ -95,7 +95,7 @@ namespace TeksavvyData {
 
             // handle link pagination if necessary
             while (!String.IsNullOrEmpty(result.NextLink)) {
-                response = await GetRequestResponse(result.NextLink);
+                response = await GetRequestResponse(result.NextLink.Replace("http:", "https:"));
                 result = JsonConvert.DeserializeObject<TeksavvyJson>(response);
                 list.AddRange(result.Value);
             }
